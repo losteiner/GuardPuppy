@@ -1,0 +1,21 @@
+## Build folder for binaries
+build/*
+build
+
+
+## Binary file types and obj files
+*.bin
+*.elf
+*.hex
+*.dmp
+*.map
+*.lst
+*.o
+
+## Eclipse project files
+.cproject
+.project
+.dep/*
+.dep
+.settings/*
+.settings
