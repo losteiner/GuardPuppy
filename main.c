@@ -32,66 +32,81 @@
 #include "lwipthread.h"
 #include "web/web.h"
 
-static WORKING_AREA(waThread1, 128);
-static msg_t Thread1(void *p) {
+//#include "modules/adc_simple.h"
+//#include "modules/sensor.h"
 
-  (void)p;
-  chRegSetThreadName("blinker");
-  while (TRUE) {
-    palSetPad(IOPORT2, PIOB_LCD_BL);
-    chThdSleepMilliseconds(100);
-    palClearPad(IOPORT2, PIOB_LCD_BL);
-    chThdSleepMilliseconds(900);
-  }
-  return 0;
+extern int valTRIM;
+
+static WORKING_AREA(waSensorThread, 128);
+static msg_t SensorThread(void *p) {
+
+	//(void)p;
+	//chRegSetThreadName("aquireADCThread");
+	systime_t time = chTimeNow();     // T0
+	while (TRUE) {
+		time += MS2ST(10);            // Next deadline
+		aquireADC();
+		chThdSleepUntil(time);
+	}
+	return 0;
 }
 
-/*
- * Application entry point.
- */
+/* Move this somewhere else! */
+char* itoa(int value, char* result, int base) {
+	// check that the base if valid
+	if (base < 2 || base > 36) { *result = '\0'; return result; }
+
+	char* ptr = result, *ptr1 = result, tmp_char;
+	int tmp_value;
+
+	do {
+		tmp_value = value;
+		value /= base;
+		*ptr++ = "zyxwvutsrqponmlkjihgfedcba9876543210123456789abcdefghijklmnopqrstuvwxyz" [35 + (tmp_value - value * base)];
+	} while ( value );
+
+	// Apply negative sign
+	if (tmp_value < 0) *ptr++ = '-';
+	*ptr-- = '\0';
+	while(ptr1 < ptr) {
+		tmp_char = *ptr;
+		*ptr--= *ptr1;
+		*ptr1++ = tmp_char;
+	}
+	return result;
+}
+
+/** Application entry point. */
 int main(void) {
 
-  /*
-   * System initializations.
-   * - HAL initialization, this also initializes the configured device drivers
-   *   and performs the board-specific initializations.
-   * - Kernel initialization, the main() function becomes a thread and the
-   *   RTOS is active.
-   */
+  /* System initializations.  */
   halInit();
   chSysInit();
 
-  /*
-   * Activates the serial driver 1 using the driver default configuration.
-   */
+  InitADC();
+
+  /* Activates the serial driver 1 using the driver default configuration. */
   sdStart(&SD1, NULL);
 
-  /*
-   * Creates the blinker thread.
-   */
-  chThdCreateStatic(waThread1, sizeof(waThread1), NORMALPRIO, Thread1, NULL);
+  /* Creates the sensor aquire thread. */
+  chThdCreateStatic(waSensorThread, sizeof(waSensorThread), NORMALPRIO, SensorThread, NULL);
 
-  /*
-   * Creates the LWIP threads (it changes priority internally).
-   */
-  chThdCreateStatic(wa_lwip_thread, LWIP_THREAD_STACK_SIZE, NORMALPRIO + 1,
-                    lwip_thread, NULL);
+  /* Creates the LWIP and HTTP threads (it changes priority internally).  */
+  chThdCreateStatic(wa_lwip_thread, LWIP_THREAD_STACK_SIZE, NORMALPRIO + 1,  lwip_thread, NULL);
+  chThdCreateStatic(wa_http_server, sizeof(wa_http_server), NORMALPRIO + 1,  http_server, NULL);
 
-  /*
-   * Creates the HTTP thread (it changes priority internally).
-   */
-  chThdCreateStatic(wa_http_server, sizeof(wa_http_server), NORMALPRIO + 1,
-                    http_server, NULL);
+  char valChar[16] = "";
 
-  /*
-   * Normal main() thread activity.
-   */
+  /* Normal main() thread activity.  */
   while (TRUE) {
     chThdSleepMilliseconds(500);
     if (!palReadPad(IOPORT2, PIOB_SW1))
       sdWrite(&SD1, (uint8_t *)"Hello World!\r\n", 14);
     if (!palReadPad(IOPORT2, PIOB_SW2))
-      TestThread(&SD1);
+    {
+    	/* Just for checking.*/
+    	sdWrite(&SD1, (uint8_t *)itoa(valTRIM,&valChar,10), 14);
+    }
   }
 
   return 0;

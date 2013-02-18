@@ -67,7 +67,10 @@ CSRC = $(PORTSRC) \
        $(BOARDSRC) \
        $(LWSRC) \
        $(CHIBIOS)/os/various/evtimer.c \
-       ./web/web.c main.c
+       ./web/web.c \
+       ./modules/adc_simple.c \
+       ./modules/sensor.c \
+       main.c
 
 # C++ sources that can be compiled in ARM or THUMB mode depending on the global
 # setting.
