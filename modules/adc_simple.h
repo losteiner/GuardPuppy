@@ -17,8 +17,8 @@
 
 
 
-void InitADC(void);
-unsigned int GetAdcChanel(unsigned char chanel);
+//void InitADC(void);
+//unsigned int GetAdcChanel(unsigned char chanel);
 
 
 

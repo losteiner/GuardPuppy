@@ -27,21 +27,18 @@
 
 #include "ch.h"
 #include "hal.h"
-#include "test.h"
 
 #include "lwipthread.h"
 #include "web/web.h"
 
-//#include "modules/adc_simple.h"
-//#include "modules/sensor.h"
-
 extern int valTRIM;
+extern int valTempSensor;
 
 static WORKING_AREA(waSensorThread, 128);
 static msg_t SensorThread(void *p) {
 
-	//(void)p;
-	//chRegSetThreadName("aquireADCThread");
+	(void)p;
+	chRegSetThreadName("aquireADCThread");
 	systime_t time = chTimeNow();     // T0
 	while (TRUE) {
 		time += MS2ST(10);            // Next deadline
@@ -51,30 +48,6 @@ static msg_t SensorThread(void *p) {
 	return 0;
 }
 
-/* Move this somewhere else! */
-char* itoa(int value, char* result, int base) {
-	// check that the base if valid
-	if (base < 2 || base > 36) { *result = '\0'; return result; }
-
-	char* ptr = result, *ptr1 = result, tmp_char;
-	int tmp_value;
-
-	do {
-		tmp_value = value;
-		value /= base;
-		*ptr++ = "zyxwvutsrqponmlkjihgfedcba9876543210123456789abcdefghijklmnopqrstuvwxyz" [35 + (tmp_value - value * base)];
-	} while ( value );
-
-	// Apply negative sign
-	if (tmp_value < 0) *ptr++ = '-';
-	*ptr-- = '\0';
-	while(ptr1 < ptr) {
-		tmp_char = *ptr;
-		*ptr--= *ptr1;
-		*ptr1++ = tmp_char;
-	}
-	return result;
-}
 
 /** Application entry point. */
 int main(void) {
@@ -104,8 +77,9 @@ int main(void) {
       sdWrite(&SD1, (uint8_t *)"Hello World!\r\n", 14);
     if (!palReadPad(IOPORT2, PIOB_SW2))
     {
+    	chprintf(&valChar, "TRIM: %d\r\nTERM: %d C\r\n", valTRIM, calcTempC(valTempSensor) );
     	/* Just for checking.*/
-    	sdWrite(&SD1, (uint8_t *)itoa(valTRIM,&valChar,10), 14);
+    	sdWrite(&SD1, (uint8_t *)valChar, 14);
     }
   }
 

@@ -22,3 +22,4 @@ void aquireADC()
 	valTRIM			= GetAdcChanel(ADC_CHN_7);
 	valMicIn		= GetAdcChanel(ADC_CHN_8);
 }
+
