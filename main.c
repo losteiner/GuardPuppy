@@ -41,7 +41,7 @@ static msg_t SensorThread(void *p) {
 	chRegSetThreadName("aquireADCThread");
 	systime_t time = chTimeNow();     // T0
 	while (TRUE) {
-		time += MS2ST(10);            // Next deadline
+		time += MS2ST(1000);            // Next deadline
 		aquireADC();
 		chThdSleepUntil(time);
 	}
@@ -77,7 +77,8 @@ int main(void) {
       sdWrite(&SD1, (uint8_t *)"Hello World!\r\n", 14);
     if (!palReadPad(IOPORT2, PIOB_SW2))
     {
-    	chprintf(&valChar, "TRIM: %d\r\nTERM: %d C\r\n", valTRIM, calcTempC(valTempSensor) );
+    	// FIXME: Here is something wrong. No transmission
+    	chprintf(&valChar, "TRIM: %d\r\n", valTRIM );
     	/* Just for checking.*/
     	sdWrite(&SD1, (uint8_t *)valChar, 14);
     }

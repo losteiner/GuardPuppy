@@ -20,8 +20,7 @@ volatile unsigned int valTRIM = 0;
 volatile unsigned int valMicIn = 0;
 
 
-int calcTempC(unsigned int measADC);
-
+//int calcTempC(unsigned int measADC);
 //void aquireADC();
 
 #endif /* SENSOR_H_ */
