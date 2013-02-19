@@ -77,10 +77,8 @@ int main(void) {
       sdWrite(&SD1, (uint8_t *)"Hello World!\r\n", 14);
     if (!palReadPad(IOPORT2, PIOB_SW2))
     {
-    	// FIXME: Here is something wrong. No transmission
-    	chprintf(&valChar, "TRIM: %d\r\n", valTRIM );
-    	/* Just for checking.*/
-    	sdWrite(&SD1, (uint8_t *)valChar, 14);
+    	// TODO: Move this to thread
+    	chprintf((BaseChannel*)&SD1, "TRIM: %d\r\nTemp: %d\r\n", valTRIM , calcTempC(valTempSensor));
     }
   }
 
