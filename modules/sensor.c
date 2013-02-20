@@ -18,8 +18,13 @@ int calcTempC(unsigned int measADC)
 /* Measurement from sensors (10 bit)*/
 void aquireADC()
 {
+	// TODO: Here some buffering would be good.
+	/* Aquire values from ADC and increase refresh counters */
 	valTempSensor	= GetAdcChanel(ADC_CHN_6);
+	refrTempSensor++;
 	valTRIM			= GetAdcChanel(ADC_CHN_7);
+	refrTRIM++;
 	valMicIn		= GetAdcChanel(ADC_CHN_8);
+	refrMicIn++;
 }
 

@@ -10,17 +10,17 @@
 #define SENSOR_H_
 
 
-/* Temperature sensor measured value */
+/* Temperature sensor measured value and refresh counte*/
 volatile unsigned int valTempSensor = 0;
+volatile unsigned short refrTempSensor = 0;
 
-/* TRIM potentiometer measured value */
+/* TRIM potentiometer measured value and refresh counter*/
 volatile unsigned int valTRIM = 0;
+volatile unsigned short refrTRIM = 0;
 
-/* microphone input measured value */
+/* microphone input measured value and refresh counte*/
 volatile unsigned int valMicIn = 0;
+volatile unsigned short refrMicIn = 0;
 
-
-//int calcTempC(unsigned int measADC);
-//void aquireADC();
 
 #endif /* SENSOR_H_ */

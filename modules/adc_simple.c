@@ -35,7 +35,7 @@ void InitADC(void) {
 unsigned int GetAdcChanel(unsigned char chanel) {
 
   // variable
-  unsigned int result;
+  unsigned int result=0;
 
   // Enable desired chanel
   a_pADC->ADC_CHER = chanel;

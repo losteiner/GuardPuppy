@@ -41,7 +41,7 @@ static msg_t SensorThread(void *p) {
 	chRegSetThreadName("aquireADCThread");
 	systime_t time = chTimeNow();     // T0
 	while (TRUE) {
-		time += MS2ST(1000);            // Next deadline
+		time += MS2ST(5);            // Next deadline
 		aquireADC();
 		chThdSleepUntil(time);
 	}
