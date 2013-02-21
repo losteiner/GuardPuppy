@@ -8,6 +8,7 @@
 
 #include "adc_simple.h"
 #include "sensor.h"
+#include "modconf.h"
 
 /* Converts the measured temperature to Celsius */
 int calcTempC(unsigned int measADC)
@@ -21,10 +22,20 @@ void aquireADC()
 	// TODO: Here some buffering would be good.
 	/* Aquire values from ADC and increase refresh counters */
 	valTempSensor	= GetAdcChanel(ADC_CHN_6);
-	refrTempSensor++;
+	//refrTempSensor++;
 	valTRIM			= GetAdcChanel(ADC_CHN_7);
-	refrTRIM++;
+	//refrTRIM++;
 	valMicIn		= GetAdcChanel(ADC_CHN_8);
 	refrMicIn++;
 }
 
+
+void sampleHandler()
+{
+/* Variable adc sampling available only if enabled in modconf.h */
+#ifdef VARIABLE_SAMPLING
+	#if (OPT_YES == VARIABLE_SAMPLING)
+	sampleInterval = valTRIM;
+	#endif
+#endif
+}
