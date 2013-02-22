@@ -30,12 +30,3 @@ void aquireADC()
 }
 
 
-void sampleHandler()
-{
-/* Variable adc sampling available only if enabled in modconf.h */
-#ifdef VARIABLE_SAMPLING
-	#if (OPT_YES == VARIABLE_SAMPLING)
-	sampleInterval = valTRIM;
-	#endif
-#endif
-}
