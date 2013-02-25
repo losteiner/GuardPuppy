@@ -24,7 +24,7 @@ volatile unsigned int valTempSensor = 0;
 volatile unsigned int valTRIM = 0;
 //volatile unsigned short refrTRIM = 0;
 
-/* microphone input measured value and refresh counte*/
+/* microphone input measured value and refresh counter*/
 volatile unsigned int valMicIn = 0;
 volatile unsigned short refrMicIn = 0;
 
