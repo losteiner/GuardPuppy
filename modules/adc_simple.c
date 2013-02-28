@@ -10,54 +10,60 @@
 #define SAM7_PLATFORM SAM7X256
 #endif
 
-
 #include "adc_simple.h"
-#include "at91sam7.h"
+//#include "sensor.h"
 
-AT91PS_ADC a_pADC = AT91C_BASE_ADC;
-AT91PS_PMC a_pPMC = AT91C_BASE_PMC;
+//extern measVal* pBuffMicPosition;
 
-void InitADC(void) {
+/*
+* ADC end conversion callback.
+* The PWM channels are reprogrammed using the latest ADC samples.
+* The latest samples are transmitted into a single SPI transaction.
+*/
+void adc_cb(ADCDriver *adcp, adcsample_t *buffer, size_t n) {
 
-  // Enable clock for interface
-  a_pPMC->PMC_PCER = 1 << AT91C_ID_ADC;
+  (void) buffer; (void) n;
+  /* Note, only in the ADC_COMPLETE state because the ADC driver fires an
+intermediate callback when the buffer is half full.*/
+  if (adcp->state == ADC_COMPLETE) {
+    adcsample_t avg_ch;
 
-  // Reset
-  a_pADC->ADC_CR = 0x1;
-  a_pADC->ADC_CR = 0x0;
+    /* Calculates the average values from the ADC samples.*/
+    avg_ch = (	mic_samples[0] + mic_samples[2] + mic_samples[4] + mic_samples[6] +
+    			mic_samples[1] + mic_samples[3] + mic_samples[5] + mic_samples[7]) / (ADC_MIC_GRP1_BUF_DEPTH);
 
-  // Set maximum startup time and hold time
-  a_pADC->ADC_MR = 0x0F1F0F00;
+    chSysLockFromIsr();
 
-}
+    valMicIn = (unsigned int)avg_ch;
 
+    //(*pBuffMicPosition).val = (unsigned int)avg_ch;
+    //(*pBuffMicPosition).isNew += 1;
+    //pBuffMicPosition++;
 
-unsigned int GetAdcChanel(unsigned char chanel) {
-
-  // variable
-  unsigned int result=0;
-
-  // Enable desired chanel
-  a_pADC->ADC_CHER = chanel;
-
-  // Start conversion
-  a_pADC->ADC_CR = 0x2;
-
-  // wait for end of convertion
-  while(!(a_pADC->ADC_SR&chanel));
-
-  switch (chanel) {
-
-    case ADC_CHN_1: result = a_pADC->ADC_CDR0; break;
-    case ADC_CHN_2: result = a_pADC->ADC_CDR1; break;
-    case ADC_CHN_3: result = a_pADC->ADC_CDR2; break;
-    case ADC_CHN_4: result = a_pADC->ADC_CDR3; break;
-    case ADC_CHN_5: result = a_pADC->ADC_CDR4; break;
-    case ADC_CHN_6: result = a_pADC->ADC_CDR5; break;
-    case ADC_CHN_7: result = a_pADC->ADC_CDR6; break;
-    case ADC_CHN_8: result = a_pADC->ADC_CDR7; break;
+    chSysUnlockFromIsr();
   }
-
-  return result;
-
 }
+
+
+static WORKING_AREA(waThreadADC, 128);
+static msg_t ThreadADC(void *p) {
+
+  (void)p;
+  chRegSetThreadName("adcHigh");
+  while (TRUE) {
+
+	  adcStartConversionI(&ADCD1, &acg_mic, mic_samples, ADC_MIC_GRP1_BUF_DEPTH);
+
+	  // TODO: Should wait after adcStartConversion?
+	  chThdSleepMilliseconds(5);
+
+  }
+  return 0;
+}
+
+void startADCThread()
+{
+	/* Starts the ADC conversion thread */
+	chThdCreateStatic(waThreadADC, sizeof(waThreadADC), HIGHPRIO, ThreadADC, NULL);
+}
+

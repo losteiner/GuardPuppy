@@ -6,27 +6,21 @@
  *      Description: The sensors module contains the temperature and potentiometer handling.
  */
 
-#include "adc_simple.h"
+//#include "adc_simple.h"
 #include "sensor.h"
 #include "modconf.h"
 
-/* Converts the measured temperature to Celsius */
-int calcTempC(unsigned int measADC)
-{
-	return ((measADC*10)/19);
-}
 
-/* Measurement from sensors (10 bit)*/
-void aquireADC()
+/* Buffer init */
+void initBuffer()
 {
-	// TODO: Here some buffering would be good.
-	/* Aquire values from ADC and increase refresh counters */
-	valTempSensor	= GetAdcChanel(ADC_CHN_6);
-	//refrTempSensor++;
-	valTRIM			= GetAdcChanel(ADC_CHN_7);
-	//refrTRIM++;
-	valMicIn		= GetAdcChanel(ADC_CHN_8);
-	refrMicIn++;
+	int i;
+	for(i=0; i<MIC_BUFFER_DEPTH;i++)
+	{
+		buffMicIn[i].val = 0;
+		buffMicIn[i].isNew = 0;
+	}
+	pBuffMicPosition = &buffMicIn;
 }
 
 
