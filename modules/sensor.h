@@ -9,17 +9,24 @@
 #ifndef SENSOR_H_
 #define SENSOR_H_
 
+/* ============================================================ [MACROS] ==== */
 
 #define MIC_BUFFER_DEPTH	100
 
 
-
+/* ============================================================ [TYPES] ==== */
 typedef struct measuredVal {
 	unsigned int val;
 	unsigned short isNew;
 } measVal;
 
-measVal buffMicIn[MIC_BUFFER_DEPTH];
-measVal* pBuffMicPosition;
+/* ============================================================ [VARIABLES] ==== */
+
+
+
+/* ============================================================ [FUNCTIONS] ==== */
+
+void initBuffer();
+unsigned short pushSamplesToBuffer(unsigned int*, unsigned short);
 
 #endif /* SENSOR_H_ */
