@@ -9,6 +9,9 @@
 #ifndef SENSOR_H_
 #define SENSOR_H_
 
+#include "ch.h"
+#include "hal.h"
+
 /* ============================================================ [MACROS] ==== */
 
 #define MIC_BUFFER_DEPTH	100

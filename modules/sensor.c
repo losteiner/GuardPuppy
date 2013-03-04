@@ -17,7 +17,8 @@
 
 /* ============================================================ [LOCAL VARIABLES] ==== */
 measVal  L_buffMicIn[MIC_BUFFER_DEPTH];
-measVal* L_pBuffMicPosition;
+//measVal* L_pBuffMicPosition;
+unsigned int L_pBuffMicPosition;
 
 unsigned short L_bufferState;
 
@@ -29,23 +30,62 @@ void initBuffer()
 	int i;
 	for(i=0; i<MIC_BUFFER_DEPTH;i++)
 	{
-		L_buffMicIn[i].val = 0;
+		L_buffMicIn[i].val = 0xFFFF;
 		L_buffMicIn[i].isNew = 0;
 	}
-	L_pBuffMicPosition = &L_buffMicIn;
+	//L_pBuffMicPosition = &L_buffMicIn;
+	L_pBuffMicPosition = 0;
 	L_bufferState = BUFFER_STATE_EMPTY;
 }
 
 /* Push sample(s) into buffer */
 unsigned short pushSamplesToBuffer(unsigned int* sampleBuff, unsigned short sizeBuff)
 {
+
 	// TODO: Copy the content of sampleBuff into working area buffer
 	int i;
-	for(i=0; i < sizeBuff && !BUFFER_STATE_FULL; i++)
+	for(i=0; i < sizeBuff && BUFFER_STATE_FULL != L_bufferState; i++)
 	{
-
-		L_pBuffMicPosition[i].val = (unsigned int)*sampleBuff;
-		sampleBuff++;
+		L_buffMicIn[L_pBuffMicPosition].val = (unsigned int)sampleBuff[i];
+		L_buffMicIn[L_pBuffMicPosition].isNew++;
+		//sampleBuff++;
 		L_pBuffMicPosition++;
+
+		/* The buffer reached the limit */
+		if(L_pBuffMicPosition >= MIC_BUFFER_DEPTH)
+		{
+			L_bufferState = BUFFER_STATE_FULL;
+		}
+		else
+		{
+			L_bufferState = BUFFER_STATE_READY;
+		}
 	}
+
+	return L_bufferState;
+}
+
+void printBufferToSerial()
+{
+	chprintf((BaseChannel*)&SD1, "Mic = [" );
+
+	int i;
+	for(i=0; i < MIC_BUFFER_DEPTH; i++)
+	{
+		chprintf((BaseChannel*)&SD1, "%d,",  L_buffMicIn[i].val );
+	}
+
+	chprintf((BaseChannel*)&SD1, "]\r\n" );
+
+	chprintf((BaseChannel*)&SD1, "isNew = [" );
+
+	for(i=0; i < MIC_BUFFER_DEPTH; i++)
+	{
+		chprintf((BaseChannel*)&SD1, "%d,", L_buffMicIn[i].isNew );
+	}
+
+	chprintf((BaseChannel*)&SD1, "]\r\n" );
+
+	chprintf((BaseChannel*)&SD1,"L_pBuffMicPosition:%d\r\n",L_pBuffMicPosition);
+
 }

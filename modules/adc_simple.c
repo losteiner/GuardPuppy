@@ -32,13 +32,12 @@ intermediate callback when the buffer is half full.*/
     avg_ch = (	mic_samples[0] + mic_samples[2] + mic_samples[4] + mic_samples[6] +
     			mic_samples[1] + mic_samples[3] + mic_samples[5] + mic_samples[7]) / (ADC_MIC_GRP1_BUF_DEPTH);
 
+
     chSysLockFromIsr();
 
     valMicIn = (unsigned int)avg_ch;
 
-    //(*pBuffMicPosition).val = (unsigned int)avg_ch;
-    //(*pBuffMicPosition).isNew += 1;
-    //pBuffMicPosition++;
+    pushSamplesToBuffer(&mic_samples, ADC_MIC_GRP1_BUF_DEPTH);
 
     chSysUnlockFromIsr();
   }

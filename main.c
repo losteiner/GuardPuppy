@@ -35,6 +35,7 @@
 
 //extern unsigned int valTRIM;
 extern unsigned int valMicIn;
+extern short L_bufferState;
 
 
 /****************************
@@ -59,10 +60,18 @@ int main(void) {
   /* Here starts the ADC conversion thread */
   startADCThread();
 
+  int isPrinted = 0;
+
   /* Normal main() thread activity.  */
   while (TRUE) {
-    chThdSleepMilliseconds(10);
+    chThdSleepMilliseconds(100);
 
+    if(L_bufferState == 0xFF && !isPrinted)
+    {
+    	printBufferToSerial();
+    	isPrinted++;
+
+    }
 
     if (!palReadPad(IOPORT2, PIOB_SW1))
       sdWrite(&SD1, (uint8_t *)"Hello World!\r\n", 14);
