@@ -48,7 +48,9 @@
 #if LWIP_NETCONN
 
 static const char http_html_hdr[] = "HTTP/1.1 200 OK\r\nContent-type: text/html\r\n\r\n";
-static const char http_index_html[] = "<html><head><title>Congrats!</title></head><body><h1>Welcome to our lwIP HTTP server!</h1><p>This is a small test page.</body></html>";
+static const char http_index_html_head[] = "<HTML><HEAD><TITLE>GuardPuppy</TITLE></HEAD><BODY><h2>GuardPuppy HTTP server!</h2><BR>";
+static const char http_index_html_body[] = "Blabla<BR>";
+static const char http_index_html_tail[] = "</BODY></HTML>";
 
 static void http_server_serve(struct netconn *conn) {
   struct netbuf *inbuf;
@@ -79,7 +81,14 @@ static void http_server_serve(struct netconn *conn) {
       netconn_write(conn, http_html_hdr, sizeof(http_html_hdr)-1, NETCONN_NOCOPY);
 
       /* Send our HTML page */
-      netconn_write(conn, http_index_html, sizeof(http_index_html)-1, NETCONN_NOCOPY);
+      netconn_write(conn, http_index_html_head, sizeof(http_index_html_head)-1, NETCONN_NOCOPY);
+
+      /* Send the BODY part of HTML page */
+      // TODO: here compose the BODY part first
+      netconn_write(conn, http_index_html_body, sizeof(http_index_html_body)-1, NETCONN_NOCOPY);
+
+      /* Send the closure tags of HTML page */
+      netconn_write(conn, http_index_html_tail, sizeof(http_index_html_tail)-1, NETCONN_NOCOPY);
     }
   }
   /* Close the connection (server closes in HTTP) */

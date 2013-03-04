@@ -30,7 +30,7 @@ void initBuffer()
 	int i;
 	for(i=0; i<MIC_BUFFER_DEPTH;i++)
 	{
-		L_buffMicIn[i].val = 0xFFFF;
+		L_buffMicIn[i].val = 0x0000;
 		L_buffMicIn[i].isNew = 0;
 	}
 	//L_pBuffMicPosition = &L_buffMicIn;
@@ -39,14 +39,15 @@ void initBuffer()
 }
 
 /* Push sample(s) into buffer */
-unsigned short pushSamplesToBuffer(unsigned int* sampleBuff, unsigned short sizeBuff)
+unsigned short pushSamplesToBuffer(uint16_t* sampleBuff, unsigned short sizeBuff)
 {
 
 	// TODO: Copy the content of sampleBuff into working area buffer
 	int i;
 	for(i=0; i < sizeBuff && BUFFER_STATE_FULL != L_bufferState; i++)
 	{
-		L_buffMicIn[L_pBuffMicPosition].val = (unsigned int)sampleBuff[i];
+		// FIXME: The sampleBuff gives here 32bit back... dereference needed????
+		L_buffMicIn[L_pBuffMicPosition].val = sampleBuff[i];
 		L_buffMicIn[L_pBuffMicPosition].isNew++;
 		//sampleBuff++;
 		L_pBuffMicPosition++;

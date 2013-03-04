@@ -47,14 +47,14 @@ static void adc_cb(ADCDriver *adcp, adcsample_t *buffer, size_t n);
 static adcsample_t mic_samples[ADC_MIC_GRP1_NUM_CHANNELS * ADC_MIC_GRP1_BUF_DEPTH];
 
 /*
-* ADC conversion group.
+* ADC MIC conversion group.
 * Mode: Linear buffer, 8 samples of 1 channels, triggered.
 * Channels: 1
 * Sensor: Microphone
 */
 static ADCConversionGroup acg_mic = {
 		FALSE,					// circular
-		ADC_MIC_GRP1_NUM_CHANNELS, 	// num_channels (2)
+		ADC_MIC_GRP1_NUM_CHANNELS, 	// num_channels (1)
 		adc_cb,					// end_cb
 		NULL,					// error_cb
 		ADC_CHN_8,	// channelselects (TRIM and MIC)

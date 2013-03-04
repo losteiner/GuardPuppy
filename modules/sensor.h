@@ -19,7 +19,7 @@
 
 /* ============================================================ [TYPES] ==== */
 typedef struct measuredVal {
-	unsigned int val;
+	uint16_t val;
 	unsigned short isNew;
 } measVal;
 
@@ -30,6 +30,6 @@ typedef struct measuredVal {
 /* ============================================================ [FUNCTIONS] ==== */
 
 void initBuffer();
-unsigned short pushSamplesToBuffer(unsigned int*, unsigned short);
+unsigned short pushSamplesToBuffer(uint16_t*, unsigned short);
 
 #endif /* SENSOR_H_ */
