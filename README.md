@@ -27,11 +27,15 @@ Notes:
 <pre>
     SUBSYSTEM=="usb", ACTION=="add", ATTR{idProduct}=="002a", ATTR{idVendor}=="15ba", MODE="666", GROUP="plugdev"
 </pre>
+and for root usage add to dialup group
+<pre>
+sudo usermod -a -G dialout $USER
+</pre>
 3. Set the correct location in Makefile for CHIBIOS variable!
 
 4. I'm using Eclipse on a Linux/FreeBSD for development and debugging but using a Makefile. Because of this the compilation on other OS is possible but not tested.
 
-5. The ChibiOS version was changed from 2.4.3 stable to master branch on GITHub.
+5. The ChibiOS version was changed from 2.6.6 stable. Place relative to project like this: <B>CHIBIOS = ../../ARM/ChibiOS</B>
 
 ---------------------------------------------------------------------------------------------------------------------
 Links:
